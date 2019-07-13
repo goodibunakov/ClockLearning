@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircularClockSeekBar">
+        <attr name="hand_hour" format="reference" />
+        <attr name="hand_minute" format="reference" />
+    </declare-styleable>
+</resources>
