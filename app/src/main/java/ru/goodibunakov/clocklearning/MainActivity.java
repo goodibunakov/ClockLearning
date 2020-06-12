@@ -24,6 +24,11 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements AsyncTaskListener {
 
+    /**
+     * Creating a Kotlin Android rotary knob
+     * https://medium.com/androiddevelopers/dependency-injection-on-android-with-hilt-67b6031e62d
+     */
+
     @BindView(R.id.clock_seek_bar_hour)
     CircularClockSeekBarHour circularClockSeekBarHour;
     @BindView(R.id.clock_seek_bar_minute)
@@ -68,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
         if (random == null) random = new Random();
         indexHour = random.nextInt(11) + 1;
         int indexForMinArray = random.nextInt(minutesArray.length);
-        indexMinute = Integer.valueOf(minutesArray[indexForMinArray]);
+        indexMinute = Integer.parseInt(minutesArray[indexForMinArray]);
         tvHour.setText(String.valueOf(indexHour));
         tvMinute.setText(minutesArray[indexForMinArray]);
         tvStatus.startAnimation(out);
@@ -95,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
             tvStatus.setText(R.string.right);
             playSound(soundIDYes);
             new PauseTask(this).execute();
-        } else{
+        } else {
             tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorAccent));
             tvStatus.setText(R.string.wrong);
             playSound(soundIDNo);
@@ -108,9 +113,13 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
         mp.setLooping(true);
         mp.start();
 
+        float currentVolumeIndex = 0f;
+        float maxVolumeIndex = 0f;
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        float currentVolumeIndex = (float) audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        float maxVolumeIndex = (float) audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        if (audioManager != null) {
+            currentVolumeIndex = (float) audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            maxVolumeIndex = (float) audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        }
         volume = currentVolumeIndex / maxVolumeIndex;
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         if (Build.VERSION.SDK_INT >= 21) {
@@ -126,8 +135,8 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
             soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
         }
         soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> loaded = true);
-        soundIDYes = soundPool.load(MainActivity.this, R.raw.yes, 1);
-        soundIDNo = soundPool.load(MainActivity.this, R.raw.no, 1);
+        soundIDYes = soundPool.load(this, R.raw.yes, 1);
+        soundIDNo = soundPool.load(this, R.raw.no, 1);
     }
 
     @Override
